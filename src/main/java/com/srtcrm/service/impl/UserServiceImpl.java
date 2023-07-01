@@ -8,15 +8,16 @@ import com.srtcrm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+
 @Service
 public class UserServiceImpl extends ServiceImpl<UserDao, UserInfo> implements UserService {
-    @Autowired
-    private UserDao userDao;
     @Override
     public UserInfo login(String openid) {
         QueryWrapper<UserInfo> qw = new QueryWrapper<>();
         qw.eq("openid",openid);
-        return userDao.selectOne(qw);
+        return getOne(qw);
+        //return userDao.selectOne(qw);
     }
 
     @Override
@@ -26,12 +27,25 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserInfo> implements U
         userInfo.setPermissions(0);
         userInfo.setName(name);
         userInfo.setPhone(phone);
-        return userDao.insert(userInfo) > 0;
+        return save(userInfo);
     }
 
     @Override
     public Integer getPermission(String openid) {
         return null;
+    }
+
+    @Override
+    public Integer getIdByOpenid(String openid) {
+        QueryWrapper<UserInfo> qw = new QueryWrapper<>();
+        qw.eq("openid",openid);
+        if (getOne(qw) != null){
+            return getOne(qw).getId();
+        }
+        else {
+            return -1;
+        }
+
     }
 
 }
