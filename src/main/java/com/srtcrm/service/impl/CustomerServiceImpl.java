@@ -20,10 +20,10 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
     @Autowired
     private UserService userService;
     @Override
-    public IPage<CustomerInfo> getCustomerNamePage(String openid, int statement_id,int currentPage, int pageSize) {
+    public IPage<CustomerInfo> getCustomerNamePage(String token, int statement_id,int currentPage, int pageSize) {
         IPage<CustomerInfo> page = new Page<CustomerInfo>(currentPage,pageSize);
         //去user_info表格查询对应的表ID
-        Integer id = userService.getIdByOpenid(openid);
+        Integer id = userService.getIdByToken(token);
         if (id == -1) return null;
         //再回到statement_info中找到数据
         QueryWrapper<CustomerInfo> qw = new QueryWrapper<>();
@@ -33,8 +33,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
     }
 
     @Override
-    public CustomerInfo getCustomerDetailPage(String openid, int customer_id) {
-        Integer id = userService.getIdByOpenid(openid);
+    public CustomerInfo getCustomerDetailPage(String token, int customer_id) {
+        Integer id = userService.getIdByToken(token);
         if (id == -1) return null;
         //再回到statement_info中找到数据
         return getById(customer_id);
@@ -43,7 +43,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
     @Override
     public Boolean addCustomer(JsonNode jsonNode) {
         CustomerInfo customerInfo = new CustomerInfo();
-        Integer id = userService.getIdByOpenid(jsonNode.get("openid").asText());
+        Integer id = userService.getIdByToken(jsonNode.get("token").asText());
         if (id == -1) return false;
         customerInfo.setStatement_id(jsonNode.get("statement_id").asInt());
         customerInfo.setCustomer_name(jsonNode.get("customer_name").asText());
@@ -58,7 +58,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
     @Override
     public Boolean updateCustomer(JsonNode jsonNode) {
         CustomerInfo customerInfo = new CustomerInfo();
-        Integer id = userService.getIdByOpenid(jsonNode.get("openid").asText());
+        Integer id = userService.getIdByToken(jsonNode.get("token").asText());
         if (id == -1) return false;
         customerInfo.setId(jsonNode.get("customer_id").asInt());
         customerInfo.setCustomer_name(jsonNode.get("customer_name").asText());
@@ -72,7 +72,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
 
     @Override
     public Boolean deleteCustomer(JsonNode jsonNode) {
-        Integer id = userService.getIdByOpenid(jsonNode.get("openid").asText());
+        Integer id = userService.getIdByToken(jsonNode.get("token").asText());
         if (id == -1) return false;
         return removeById(jsonNode.get("customer_id").asInt());
     }

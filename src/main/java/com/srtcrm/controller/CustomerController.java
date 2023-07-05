@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.*;
 public class CustomerController {
     @Autowired
     private CustomerService customerService;
-    @GetMapping("name/{openid}/{statement_id}/{currentPage}/{pageSize}")
-    public ResponseEntity<?> getCustomerNameByPage(@PathVariable String openid, @PathVariable int statement_id, @PathVariable int currentPage, @PathVariable int pageSize){
-        if (customerService.getCustomerNamePage(openid, statement_id, currentPage, pageSize) != null){
-            return ResponseEntity.status(HttpStatus.OK).body(new R(true,customerService.getCustomerNamePage(openid, statement_id, currentPage, pageSize),"ok"));
+    @GetMapping("name/{token}/{statement_id}/{currentPage}/{pageSize}")
+    public ResponseEntity<?> getCustomerNameByPage(@PathVariable String token, @PathVariable int statement_id, @PathVariable int currentPage, @PathVariable int pageSize){
+        if (customerService.getCustomerNamePage(token, statement_id, currentPage, pageSize) != null){
+            return ResponseEntity.status(HttpStatus.OK).body(new R(true,customerService.getCustomerNamePage(token, statement_id, currentPage, pageSize),"ok"));
         }
         else {
             return ResponseEntity.status(HttpStatus.OK).body(new R(false,null,"获取失败，可能是用户不存在"));
@@ -24,10 +24,10 @@ public class CustomerController {
 
     }
 
-    @GetMapping("/{openid}/{customer_id}")
-    public ResponseEntity<?> getCustomerDetailByPage(@PathVariable String openid, @PathVariable int customer_id){
-        if (customerService.getCustomerDetailPage(openid, customer_id) != null){
-            return ResponseEntity.status(HttpStatus.OK).body(new R(true,customerService.getCustomerDetailPage(openid, customer_id),"ok"));
+    @GetMapping("/{token}/{customer_id}")
+    public ResponseEntity<?> getCustomerDetailByPage(@PathVariable String token, @PathVariable int customer_id){
+        if (customerService.getCustomerDetailPage(token, customer_id) != null){
+            return ResponseEntity.status(HttpStatus.OK).body(new R(true,customerService.getCustomerDetailPage(token, customer_id),"ok"));
         }
         else {
             return ResponseEntity.status(HttpStatus.OK).body(new R(false,null,"获取失败，可能是用户不存在"));

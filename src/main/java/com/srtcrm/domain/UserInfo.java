@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class UserInfo {
     private Integer id;
-    private String openid;
+    private String token;
     private Integer permissions;
     private String name;
     private String phone;
