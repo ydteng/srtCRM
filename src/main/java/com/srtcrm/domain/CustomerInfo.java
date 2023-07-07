@@ -10,8 +10,9 @@ public class CustomerInfo {
     private Integer statement_id;
     private String customer_name;
     private String product_id;
-    private int consumption;
+    private Integer consumption;
+    private String transaction_description;
+    private String plan_description;
     private String transaction_status;
-    private String plan_status;
     private String remarks;
 }

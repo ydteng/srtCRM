@@ -7,15 +7,18 @@ import com.srtcrm.controller.utils.ToolFunction;
 import com.srtcrm.dao.UserDao;
 import com.srtcrm.domain.UserInfo;
 import com.srtcrm.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.NoSuchAlgorithmException;
 
 @Service
 public class UserServiceImpl extends ServiceImpl<UserDao, UserInfo> implements UserService {
+    @Autowired
+    private ToolFunction toolFunction;
     @Override
     public UserInfo login(String code) throws JsonProcessingException, NoSuchAlgorithmException {
-        ToolFunction toolFunction = new ToolFunction();
+//        ToolFunction toolFunction = new ToolFunction();
         String openid = toolFunction.getOpenid(code);
         String token = toolFunction.generateTokenWithOpenid(openid);
         QueryWrapper<UserInfo> qw = new QueryWrapper<>();
@@ -26,11 +29,11 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserInfo> implements U
 
     @Override
     public String register(String code, String name, String phone) throws JsonProcessingException, NoSuchAlgorithmException {
-        ToolFunction toolFunction = new ToolFunction();
+//        ToolFunction toolFunction = new ToolFunction();
         String openid = toolFunction.getOpenid(code);
         String token = toolFunction.generateTokenWithOpenid(openid);
         if (token == null) return null;
-        if (getIdByToken(token) != null) return null;
+        if (getIdByToken(token) != -1) return null;
         UserInfo userInfo = new UserInfo();
         userInfo.setToken(token);
         userInfo.setPermissions(0);

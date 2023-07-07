@@ -9,9 +9,12 @@ import com.srtcrm.dao.CustomerDao;
 import com.srtcrm.domain.CustomerInfo;
 import com.srtcrm.domain.StatementInfo;
 import com.srtcrm.service.CustomerService;
+import com.srtcrm.service.StatementService;
 import com.srtcrm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> implements CustomerService {
@@ -19,6 +22,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
     private CustomerDao customerDao;
     @Autowired
     private UserService userService;
+    @Autowired
+    private StatementService statementService;
     @Override
     public IPage<CustomerInfo> getCustomerNamePage(String token, int statement_id,int currentPage, int pageSize) {
         IPage<CustomerInfo> page = new Page<CustomerInfo>(currentPage,pageSize);
@@ -43,16 +48,32 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
     @Override
     public Boolean addCustomer(JsonNode jsonNode) {
         CustomerInfo customerInfo = new CustomerInfo();
+
         Integer id = userService.getIdByToken(jsonNode.get("token").asText());
         if (id == -1) return false;
-        customerInfo.setStatement_id(jsonNode.get("statement_id").asInt());
+        Integer statement_id = jsonNode.get("statement_id").asInt();
+        customerInfo.setStatement_id(statement_id);
         customerInfo.setCustomer_name(jsonNode.get("customer_name").asText());
         customerInfo.setProduct_id(jsonNode.get("product_id").asText());
-        customerInfo.setConsumption(jsonNode.get("consumption").asInt());
-        customerInfo.setTransaction_status(jsonNode.get("transaction_status").asText());
-        customerInfo.setPlan_status(jsonNode.get("plan_status").asText());
+        Integer consumption = jsonNode.get("consumption").asInt();
+        customerInfo.setConsumption(consumption);
+        customerInfo.setTransaction_description(jsonNode.get("transaction_description").asText());
+        customerInfo.setPlan_description(jsonNode.get("plan_description").asText());
+        String transaction_status = jsonNode.get("transaction_status").asText();
+        customerInfo.setTransaction_status(transaction_status);
         customerInfo.setRemarks(jsonNode.get("remarks").asText());
-        return save(customerInfo);
+
+
+        StatementInfo statementInfo = statementService.getById(statement_id);
+        Integer newConsumption = statementInfo.getTotal_usage() + consumption;
+        statementInfo.setTotal_usage(newConsumption);
+
+        if (transaction_status.equals("已成交")){
+            Integer newTotalTransaction = (statementInfo.getTotal_transaction() + 1);
+            statementInfo.setTotal_transaction(newTotalTransaction);
+        }
+
+        return save(customerInfo) && statementService.updateById(statementInfo);
     }
 
     @Override
@@ -60,13 +81,29 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
         CustomerInfo customerInfo = new CustomerInfo();
         Integer id = userService.getIdByToken(jsonNode.get("token").asText());
         if (id == -1) return false;
-        customerInfo.setId(jsonNode.get("customer_id").asInt());
+        Integer customer_id = jsonNode.get("customer_id").asInt();
+        customerInfo.setId(customer_id);
         customerInfo.setCustomer_name(jsonNode.get("customer_name").asText());
         customerInfo.setProduct_id(jsonNode.get("product_id").asText());
         customerInfo.setConsumption(jsonNode.get("consumption").asInt());
-        customerInfo.setTransaction_status(jsonNode.get("transaction_status").asText());
-        customerInfo.setPlan_status(jsonNode.get("plan_status").asText());
+        customerInfo.setTransaction_description(jsonNode.get("transaction_description").asText());
+        customerInfo.setPlan_description(jsonNode.get("plan_description").asText());
+        String newTransactionStatus = jsonNode.get("transaction_status ").asText();
+        customerInfo.setTransaction_status(newTransactionStatus);
         customerInfo.setRemarks(jsonNode.get("remarks").asText());
+
+        String originTransactionStatus = getById(customer_id).getTransaction_status();
+
+
+        Integer statement_id = getById(customer_id).getStatement_id();
+        StatementInfo statementInfo = statementService.getById(statement_id);
+
+        if (!Objects.equals(newTransactionStatus, originTransactionStatus)){
+            Integer newTotalTransaction = (statementInfo.getTotal_transaction() + 1);
+            statementInfo.setTotal_transaction(newTotalTransaction);
+        }
+
+
         return updateById(customerInfo);
     }
 

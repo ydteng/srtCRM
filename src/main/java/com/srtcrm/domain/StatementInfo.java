@@ -7,6 +7,7 @@ import lombok.Data;
 public class StatementInfo {
     private Integer id;
     private Integer user_id;
-    private String area;
-    private String date;
+    private String file_name;
+    private Integer total_transaction;
+    private Integer total_usage;
 }

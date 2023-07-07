@@ -43,8 +43,17 @@ public class CustomerController {
             return ResponseEntity.status(HttpStatus.OK).body(new R(false,null,"新增失败，可能是用户不存在"));
         }
     }
+    @PutMapping()
+    public ResponseEntity<?> updateCustomerWithStatementId(@RequestBody JsonNode jsonNode){
+        if (customerService.updateCustomer(jsonNode)){
+            return ResponseEntity.status(HttpStatus.OK).body(new R(true,null,"ok"));
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.OK).body(new R(false,null,"修改失败，可能是用户不存在"));
+        }
+    }
     @DeleteMapping()
-    public ResponseEntity<?> updateCustomerWithCustomerId(@RequestBody JsonNode jsonNode){
+    public ResponseEntity<?> deleteCustomerWithCustomerId(@RequestBody JsonNode jsonNode){
         if (customerService.deleteCustomer(jsonNode)){
             return ResponseEntity.status(HttpStatus.OK).body(new R(true,null,"ok"));
         }

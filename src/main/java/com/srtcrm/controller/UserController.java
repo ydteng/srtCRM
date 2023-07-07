@@ -27,13 +27,14 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("login/{token}")
+    @GetMapping("login/{code}")
     public ResponseEntity<?> login(@PathVariable String code) throws IOException, NoSuchAlgorithmException {
-        if (userService.login(code) != null){
-            return ResponseEntity.status(HttpStatus.OK).body(new R(true,userService.login(code),"ok"));
+        UserInfo userInfo = userService.login(code);
+        if (userInfo != null){
+            return ResponseEntity.status(HttpStatus.OK).body(new R(true,userInfo,"登陆成功"));
         }
         else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new R(false,null,"用户不存在"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new R(false,null,"用户不存在,或者是获取token失败"));
         }
     }
     @PostMapping("register")

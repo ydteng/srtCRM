@@ -6,6 +6,15 @@ spring:
     username: root
     password: root
 
+#我的
+wechat:
+  app-id: wxc321da798197b900
+  app-secret: 9940c644623a57bbd14f8db77a396203
+
+#旸的
+#Wexin:
+#  AppID: wxe603b135fe9b6318
+#  AppSecret: 7480cc5843be29dc9c5462792ebc94c8
 #spring:
 #    datasource:
 #        driver-class-name: com.mysql.cj.jdbc.Driver
@@ -18,7 +27,7 @@ mybatis-plus:
       id-type: auto
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-    map-underscore-to-camel-case: false   #非常重要的设置！
+    map-underscore-to-camel-case: false   #非常重要的设置！与数据库的名称映射有关
     #call-setters-on-nulls: false
 
 
