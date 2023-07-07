@@ -30,7 +30,7 @@ public class StatementController {
             return ResponseEntity.status(HttpStatus.OK).body(new R(true,null,"ok"));
         }
         else {
-            return ResponseEntity.status(HttpStatus.OK).body(new R(false,null,"新增失败！可能是用户不存在。"));
+            return ResponseEntity.status(HttpStatus.OK).body(new R(false,null,"新增失败！可能是用户不存在或者权限不足。"));
         }
     }
     @PutMapping

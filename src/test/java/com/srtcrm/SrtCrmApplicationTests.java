@@ -1,28 +1,16 @@
 package com.srtcrm;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.srtcrm.controller.UserController;
 import com.srtcrm.controller.utils.ToolFunction;
-import com.srtcrm.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
-
-import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
 @SpringBootTest
 class SrtCrmApplicationTests {
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private UserController userController;
-//    @Value("${wexin.AppID}")
-//    private String AppID;
-//    @Value("${wexin.AppSecret}")
-//    private String AppSecret;
+
     @Autowired
     private Environment environment;
     @Test

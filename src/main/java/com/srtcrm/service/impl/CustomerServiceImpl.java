@@ -59,8 +59,10 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
         customerInfo.setConsumption(consumption);
         customerInfo.setTransaction_description(jsonNode.get("transaction_description").asText());
         customerInfo.setPlan_description(jsonNode.get("plan_description").asText());
-        String transaction_status = jsonNode.get("transaction_status").asText();
-        customerInfo.setTransaction_status(transaction_status);
+
+        String transactionStatus = jsonNode.get("transaction_status").asText();
+        if (transactionStatus.equals("已成交")) customerInfo.setTransaction_status(1);
+        else if (transactionStatus.equals("未成交"))customerInfo.setTransaction_status(0);
         customerInfo.setRemarks(jsonNode.get("remarks").asText());
 
 
@@ -68,7 +70,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
         Integer newConsumption = statementInfo.getTotal_usage() + consumption;
         statementInfo.setTotal_usage(newConsumption);
 
-        if (transaction_status.equals("已成交")){
+        if (transactionStatus.equals("已成交")){
             Integer newTotalTransaction = (statementInfo.getTotal_transaction() + 1);
             statementInfo.setTotal_transaction(newTotalTransaction);
         }
@@ -88,19 +90,23 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
         customerInfo.setConsumption(jsonNode.get("consumption").asInt());
         customerInfo.setTransaction_description(jsonNode.get("transaction_description").asText());
         customerInfo.setPlan_description(jsonNode.get("plan_description").asText());
-        String newTransactionStatus = jsonNode.get("transaction_status ").asText();
-        customerInfo.setTransaction_status(newTransactionStatus);
+        String newTransactionStatus = jsonNode.get("transaction_status").asText();
+        if (newTransactionStatus.equals("已成交")) customerInfo.setTransaction_status(1);
+        else if (newTransactionStatus.equals("未成交")) customerInfo.setTransaction_status(0);
         customerInfo.setRemarks(jsonNode.get("remarks").asText());
 
-        String originTransactionStatus = getById(customer_id).getTransaction_status();
+        Integer originTransactionStatus = getById(customer_id).getTransaction_status();
 
 
         Integer statement_id = getById(customer_id).getStatement_id();
         StatementInfo statementInfo = statementService.getById(statement_id);
-
-        if (!Objects.equals(newTransactionStatus, originTransactionStatus)){
+        Integer flag = null;
+        if (newTransactionStatus.equals("已成交")) flag = 1;
+        else if (newTransactionStatus.equals("未成交")) flag = 0;
+        if (!Objects.equals(flag, originTransactionStatus)){
             Integer newTotalTransaction = (statementInfo.getTotal_transaction() + 1);
             statementInfo.setTotal_transaction(newTotalTransaction);
+            statementService.updateById(statementInfo);
         }
 
 
@@ -112,5 +118,12 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
         Integer id = userService.getIdByToken(jsonNode.get("token").asText());
         if (id == -1) return false;
         return removeById(jsonNode.get("customer_id").asInt());
+    }
+
+    @Override
+    public Boolean deleteCustomerByStatementId(Integer statement_id) {
+        QueryWrapper<CustomerInfo> qw = new QueryWrapper<>();
+        qw.eq("statement_id",statement_id);
+        return remove(qw);
     }
 }

@@ -13,6 +13,6 @@ public class CustomerInfo {
     private Integer consumption;
     private String transaction_description;
     private String plan_description;
-    private String transaction_status;
+    private Integer transaction_status;
     private String remarks;
 }

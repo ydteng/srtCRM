@@ -52,12 +52,12 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserInfo> implements U
         UserInfo userInfo = getOne(qw);
         if(userInfo != null){
             Integer permissionCode = userInfo.getPermissions();
-            if ((permissionLevel.equals("low")) && (permissionCode>=0)){
+            if ((permissionLevel.equals("low")) && (permissionCode==0)){
                 return true;
-            }else if ((permissionLevel.equals("middle")) && (permissionCode>=1)) {
+            }else if ((permissionLevel.equals("middle")) && (permissionCode==1)) {
                 return true;
                 
-            }else if ((permissionLevel.equals("high") && (permissionCode>=2))) {
+            }else if ((permissionLevel.equals("high") && (permissionCode==2))) {
                 return true;
 
             }else {

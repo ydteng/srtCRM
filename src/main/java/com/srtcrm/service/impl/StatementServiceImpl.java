@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.srtcrm.dao.StatementDao;
 import com.srtcrm.domain.StatementInfo;
+import com.srtcrm.service.CustomerService;
 import com.srtcrm.service.StatementService;
 import com.srtcrm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +16,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class StatementServiceImpl extends ServiceImpl<StatementDao, StatementInfo> implements StatementService {
     @Autowired
+    private CustomerService customerService;
+    @Autowired
     private StatementDao statementDao;
     @Autowired
     private UserService userService;
+
     @Override
     public IPage<StatementInfo> getStatementPage(String token, int currentPage, int pageSize) {
-        IPage<StatementInfo> page = new Page<StatementInfo>(currentPage,pageSize);
+        IPage<StatementInfo> page = new Page<>(currentPage, pageSize);
         Integer id = userService.getIdByToken(token);
         if (id == -1) return null;
         //去user_info表格查询对应的表ID
@@ -41,11 +45,18 @@ public class StatementServiceImpl extends ServiceImpl<StatementDao, StatementInf
     @Override
     public Boolean addStatement(JsonNode jsonNode) {
         StatementInfo statementInfo = new StatementInfo();
-        Integer id = userService.getIdByToken(jsonNode.get("token").asText());
+        String token = jsonNode.get("token").asText();
+        Integer id = userService.getIdByToken(token);
         if (id == -1) return false;
-        statementInfo.setUser_id(id);
-        statementInfo.setFile_name(jsonNode.get("file_name").asText());
-        return save(statementInfo);
+        if (userService.verifyPermission(token,"middle")){
+            statementInfo.setUser_id(id);
+            statementInfo.setStatement_name(jsonNode.get("statement_name").asText());
+            return save(statementInfo);
+        } else if (userService.verifyPermission(token,"high")) {
+            statementInfo.setUser_id(id);
+            statementInfo.setStatement_name(jsonNode.get("statement_name").asText());
+            return save(statementInfo);
+        }else return false;
     }
 
     @Override
@@ -54,7 +65,7 @@ public class StatementServiceImpl extends ServiceImpl<StatementDao, StatementInf
         Integer id = userService.getIdByToken(jsonNode.get("token").asText());
         if (id == -1) return false;
         statementInfo.setId(jsonNode.get("statement_id").asInt());
-        statementInfo.setFile_name(jsonNode.get("file_name").asText());
+        statementInfo.setStatement_name(jsonNode.get("statement_name").asText());
         return updateById(statementInfo);
     }
 
@@ -62,7 +73,9 @@ public class StatementServiceImpl extends ServiceImpl<StatementDao, StatementInf
     public Boolean deleteStatement(JsonNode jsonNode) {
         Integer id = userService.getIdByToken(jsonNode.get("token").asText());
         if (id == -1) return false;
-        return removeById(jsonNode.get("statement_id").asInt());
+        return customerService.deleteCustomerByStatementId(jsonNode.get("statement_id").asInt())
+                &&removeById(jsonNode.get("statement_id").asInt());
+
     }
 
     @Override
