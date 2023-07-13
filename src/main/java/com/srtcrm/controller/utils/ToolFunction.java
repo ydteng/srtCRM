@@ -25,6 +25,8 @@ public class ToolFunction {
     }
     public String getOpenid(String code) throws JsonProcessingException {
         RestTemplate restTemplate = new RestTemplate();
+        System.out.println("AppID-----:"+AppID);
+        System.out.println("AppSecret-----:"+AppSecret);
         String url = "https://api.weixin.qq.com/sns/jscode2session?appid="+AppID+"&secret="+AppSecret+"&js_code="+code+"&grant_type=authorization_code ";
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
         if (response.getStatusCode().is2xxSuccessful()) {

@@ -117,7 +117,15 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
     public Boolean deleteCustomer(JsonNode jsonNode) {
         Integer id = userService.getIdByToken(jsonNode.get("token").asText());
         if (id == -1) return false;
-        return removeById(jsonNode.get("customer_id").asInt());
+        Integer customer_id = jsonNode.get("customer_id").asInt();
+        CustomerInfo customerInfo = getById(customer_id);
+        Integer statement_id = customerInfo.getStatement_id();
+        Integer consumption = customerInfo.getConsumption();
+        Integer transactionStatus = customerInfo.getTransaction_status();
+        StatementInfo statementInfo = statementService.getById(statement_id);
+        if (transactionStatus==1) statementInfo.setTotal_transaction(statementInfo.getTotal_transaction()-1);
+        statementInfo.setTotal_usage(statementInfo.getTotal_usage()-consumption);
+        return statementService.updateById(statementInfo) && removeById(jsonNode.get("customer_id").asInt());
     }
 
     @Override
