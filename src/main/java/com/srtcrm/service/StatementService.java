@@ -8,6 +8,7 @@ import com.srtcrm.domain.UserInfo;
 
 public interface StatementService extends IService<StatementInfo> {
     IPage<StatementInfo> getStatementPage(String token, int currentPage, int pageSize);
+    String getStatementName(Integer statement_id);
     Boolean addStatement(JsonNode jsonNode);
     Boolean updateStatement(JsonNode jsonNode);
     Boolean deleteStatement(JsonNode jsonNode);

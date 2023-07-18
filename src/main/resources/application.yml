@@ -1,4 +1,4 @@
-#????
+#本地
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -7,21 +7,31 @@ spring:
     password: root
   main:
     allow-circular-references: true  #后期需要优化，不要使用循环依赖
-#我的
+
+
 wechat:
   app-id: wxc321da798197b900
   app-secret: 9940c644623a57bbd14f8db77a396203
 
-#旸的
+
+
+##服务器
 #wechat:
 #  app-id: wxe603b135fe9b6318
 #  app-secret: 7480cc5843be29dc9c5462792ebc94c8
 #spring:
-#    datasource:
+#  datasource:
 #        driver-class-name: com.mysql.cj.jdbc.Driver
 #        url: jdbc:mysql://localhost:3306/srt_crm_dev
 #        username: srt_crm_dev
 #        password: nAFnJaLEnPsbWkB8
+#  main:
+#    allow-circular-references: true
+
+
+
+
+#通用
 mybatis-plus:
   global-config:
     db-config:

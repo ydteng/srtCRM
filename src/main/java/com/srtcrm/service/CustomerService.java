@@ -5,11 +5,13 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.srtcrm.domain.CustomerInfo;
 
+import java.util.List;
+
 
 public interface CustomerService extends IService<CustomerInfo> {
     IPage<CustomerInfo> getCustomerNamePage(String token, int statement_id,int currentPage, int pageSize);
     CustomerInfo getCustomerDetailPage(String token, int customer_id);
-//    Boolean addCustomer(String token, int statement_id, String customer_name, String product_id, int consumption, String transaction_status, String plan_status, String remarks);
+    List<CustomerInfo> getAllByStatementId(Integer Statement_id);
     Boolean addCustomer(JsonNode jsonNode);
     Boolean updateCustomer(JsonNode jsonNode);
     Boolean deleteCustomer(JsonNode jsonNode);

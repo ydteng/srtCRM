@@ -14,6 +14,7 @@ import com.srtcrm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -43,6 +44,13 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
         if (id == -1) return null;
         //再回到statement_info中找到数据
         return getById(customer_id);
+    }
+
+    @Override
+    public List<CustomerInfo> getAllByStatementId(Integer statement_id) {
+        QueryWrapper<CustomerInfo> qw = new QueryWrapper<>();
+        qw.eq("statement_id",statement_id);
+        return customerDao.selectList(qw);
     }
 
     @Override

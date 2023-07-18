@@ -2,6 +2,7 @@ package com.srtcrm;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.srtcrm.controller.utils.ToolFunction;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,6 +36,7 @@ class SrtCrmApplicationTests {
         String AppSecret = environment.getProperty("wechat.app-secret");
 
         System.out.println(AppID+"/"+AppSecret);
+        IndexedColors.RED.getIndex();
     }
 
 }

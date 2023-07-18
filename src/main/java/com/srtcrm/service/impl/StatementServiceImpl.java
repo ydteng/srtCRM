@@ -43,6 +43,11 @@ public class StatementServiceImpl extends ServiceImpl<StatementDao, StatementInf
     }
 
     @Override
+    public String getStatementName(Integer statement_id) {
+        return getById(statement_id).getStatement_name();
+    }
+
+    @Override
     public Boolean addStatement(JsonNode jsonNode) {
         StatementInfo statementInfo = new StatementInfo();
         String token = jsonNode.get("token").asText();
@@ -72,10 +77,12 @@ public class StatementServiceImpl extends ServiceImpl<StatementDao, StatementInf
     @Override
     public Boolean deleteStatement(JsonNode jsonNode) {
         Integer id = userService.getIdByToken(jsonNode.get("token").asText());
+        Integer statement_id = jsonNode.get("statement_id").asInt();
         if (id == -1) return false;
-        return customerService.deleteCustomerByStatementId(jsonNode.get("statement_id").asInt())
-                &&removeById(jsonNode.get("statement_id").asInt());
-
+        if (customerService.getAllByStatementId(statement_id) != null){
+            customerService.deleteCustomerByStatementId(statement_id);
+        }
+        return removeById(statement_id);
     }
 
     @Override
