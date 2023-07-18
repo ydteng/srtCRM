@@ -79,7 +79,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
         statementInfo.setTotal_usage(newConsumption);
 
         if (transactionStatus.equals("已成交")){
-            Integer newTotalTransaction = (statementInfo.getTotal_transaction() + 1);
+            Integer newTotalTransaction = (statementInfo.getTotal_transaction() + consumption);
             statementInfo.setTotal_transaction(newTotalTransaction);
         }
 
@@ -95,7 +95,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
         customerInfo.setId(customer_id);
         customerInfo.setCustomer_name(jsonNode.get("customer_name").asText());
         customerInfo.setProduct_id(jsonNode.get("product_id").asText());
-        customerInfo.setConsumption(jsonNode.get("consumption").asInt());
+        Integer consumption = jsonNode.get("consumption").asInt();
+        customerInfo.setConsumption(consumption);
         customerInfo.setTransaction_description(jsonNode.get("transaction_description").asText());
         customerInfo.setPlan_description(jsonNode.get("plan_description").asText());
         String newTransactionStatus = jsonNode.get("transaction_status").asText();
@@ -112,7 +113,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
         if (newTransactionStatus.equals("已成交")) flag = 1;
         else if (newTransactionStatus.equals("未成交")) flag = 0;
         if (!Objects.equals(flag, originTransactionStatus)){
-            Integer newTotalTransaction = (statementInfo.getTotal_transaction() + 1);
+            Integer newTotalTransaction = (statementInfo.getTotal_transaction() + consumption);
             statementInfo.setTotal_transaction(newTotalTransaction);
             statementService.updateById(statementInfo);
         }
@@ -131,7 +132,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
         Integer consumption = customerInfo.getConsumption();
         Integer transactionStatus = customerInfo.getTransaction_status();
         StatementInfo statementInfo = statementService.getById(statement_id);
-        if (transactionStatus==1) statementInfo.setTotal_transaction(statementInfo.getTotal_transaction()-1);
+        if (transactionStatus==1) statementInfo.setTotal_transaction(statementInfo.getTotal_transaction()-consumption);
         statementInfo.setTotal_usage(statementInfo.getTotal_usage()-consumption);
         return statementService.updateById(statementInfo) && removeById(jsonNode.get("customer_id").asInt());
     }
