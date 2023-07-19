@@ -113,7 +113,14 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
         if (newTransactionStatus.equals("已成交")) flag = 1;
         else if (newTransactionStatus.equals("未成交")) flag = 0;
         if (!Objects.equals(flag, originTransactionStatus)){
-            Integer newTotalTransaction = (statementInfo.getTotal_transaction() + consumption);
+            int newTotalTransaction;
+            switch (flag){
+                case 0: newTotalTransaction = (statementInfo.getTotal_transaction() - consumption);
+                        break;
+                case 1:newTotalTransaction = (statementInfo.getTotal_transaction() + consumption);
+                        break;
+                default:return false;
+            }
             statementInfo.setTotal_transaction(newTotalTransaction);
             statementService.updateById(statementInfo);
         }
