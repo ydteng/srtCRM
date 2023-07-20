@@ -95,6 +95,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
         customerInfo.setId(customer_id);
         customerInfo.setCustomer_name(jsonNode.get("customer_name").asText());
         customerInfo.setProduct_id(jsonNode.get("product_id").asText());
+        Integer originConsumption = getById(customer_id).getConsumption();
         Integer consumption = jsonNode.get("consumption").asInt();
         customerInfo.setConsumption(consumption);
         customerInfo.setTransaction_description(jsonNode.get("transaction_description").asText());
@@ -115,17 +116,24 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
         if (!Objects.equals(flag, originTransactionStatus)){
             int newTotalTransaction;
             switch (flag){
-                case 0: newTotalTransaction = (statementInfo.getTotal_transaction() - consumption);
-                        break;
-                case 1:newTotalTransaction = (statementInfo.getTotal_transaction() + consumption);
-                        break;
+                case 0: //从已成交变成未成交
+                    newTotalTransaction = (statementInfo.getTotal_transaction() - originConsumption);//需要减去的是原来的用量
+
+                    break;
+                case 1://从未成交变成已成交
+                    newTotalTransaction = (statementInfo.getTotal_transaction() + consumption);
+                    break;
                 default:return false;
             }
             statementInfo.setTotal_transaction(newTotalTransaction);
-            statementService.updateById(statementInfo);
+        }
+        else {//成交状态没变
+            if (originTransactionStatus == 1 ){//原来就是已成交
+                statementInfo.setTotal_transaction(statementInfo.getTotal_transaction() - originConsumption + consumption);
+            }
         }
 
-
+        statementService.updateById(statementInfo);
         return updateById(customerInfo);
     }
 
