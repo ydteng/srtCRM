@@ -130,7 +130,11 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
         else {//成交状态没变
             if (originTransactionStatus == 1 ){//原来就是已成交
                 statementInfo.setTotal_transaction(statementInfo.getTotal_transaction() - originConsumption + consumption);
+                statementInfo.setTotal_usage(statementInfo.getTotal_usage() - originConsumption + consumption);
+            } else if (originTransactionStatus == 0) {//原来是未成交
+                statementInfo.setTotal_usage(statementInfo.getTotal_usage() - originConsumption + consumption);
             }
+
         }
 
         statementService.updateById(statementInfo);
