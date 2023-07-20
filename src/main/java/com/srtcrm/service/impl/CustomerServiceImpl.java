@@ -113,15 +113,16 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
         Integer flag = null;
         if (newTransactionStatus.equals("已成交")) flag = 1;
         else if (newTransactionStatus.equals("未成交")) flag = 0;
-        if (!Objects.equals(flag, originTransactionStatus)){
+        if (!Objects.equals(flag, originTransactionStatus)){//可优化*******************这样可读性好，但是不简洁。记住：只要更新，total_usage最好都更新一下
             int newTotalTransaction;
             switch (flag){
                 case 0: //从已成交变成未成交
                     newTotalTransaction = (statementInfo.getTotal_transaction() - originConsumption);//需要减去的是原来的用量
-
+                    statementInfo.setTotal_usage(statementInfo.getTotal_usage() - originConsumption + consumption);
                     break;
                 case 1://从未成交变成已成交
                     newTotalTransaction = (statementInfo.getTotal_transaction() + consumption);
+                    statementInfo.setTotal_usage(statementInfo.getTotal_usage() - originConsumption + consumption);
                     break;
                 default:return false;
             }
