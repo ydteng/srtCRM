@@ -113,7 +113,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
         Integer flag = null;
         if (newTransactionStatus.equals("已成交")) flag = 1;
         else if (newTransactionStatus.equals("未成交")) flag = 0;
-        if (!Objects.equals(flag, originTransactionStatus)){//可优化*******************这样可读性好，但是不简洁。记住：只要更新，total_usage最好都更新一下
+        //可优化*******************这样可读性好，但是不简洁。记住：只要更新，total_usage都要更新一下
+        if (!Objects.equals(flag, originTransactionStatus)){
             int newTotalTransaction;
             switch (flag){
                 case 0: //从已成交变成未成交
