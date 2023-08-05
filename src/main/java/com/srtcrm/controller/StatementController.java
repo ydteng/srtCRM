@@ -2,6 +2,7 @@ package com.srtcrm.controller;
 
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.support.ExcelTypeEnum;
+import com.alibaba.excel.write.metadata.WriteSheet;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.srtcrm.controller.utils.ExcelTool;
 import com.srtcrm.controller.utils.R;
@@ -44,19 +45,29 @@ public class StatementController {
         if (id == -1) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new R(false,null,"获取失败！可能是用户不存"));
 
         String fileName = statementService.getStatementName(statement_id);
-        List<CustomerInfo> customerInfoList = excelTool.getData(statement_id);
+//        List<CustomerInfo> customerInfoList = excelTool.getData(statement_id);
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
         response.setCharacterEncoding("utf-8");
         String exportName = URLEncoder.encode( fileName, "UTF-8").replaceAll( "\\+","%2");
         response.setHeader("Content-disposition", "attachment;filename=" + exportName + ".xlsx");
+//
+//        EasyExcel.write(response.getOutputStream())
+//                .registerWriteHandler(excelTool.handlerStyleWrite())
+//                .head(excelTool.head(statement_id))
+//                .excelType(ExcelTypeEnum.XLSX)
+//                .sheet("客户数据")
+//                .doWrite(customerInfoList);
+
+        String template = "src/main/resources/static/template.xlsx";
+        WriteSheet sheet = EasyExcel.writerSheet().build();
+        List<Object> excelData = excelTool.getExcelData(statement_id);
 
         EasyExcel.write(response.getOutputStream())
-                .registerWriteHandler(excelTool.handlerStyleWrite())
-                .head(excelTool.head(statement_id))
-                .excelType(ExcelTypeEnum.XLSX)
-                .sheet("客户数据")
-                .doWrite(customerInfoList);
-
+                .withTemplate(template)
+                .build()
+                .fill(excelData.get(0),sheet)
+                .fill(excelData.get(1),sheet)
+                .finish();
         return null;
     }
 

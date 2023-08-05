@@ -40,3 +40,5 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: false   #非常重要的设置！与数据库的名称映射有关
     #call-setters-on-nulls: false
+server:
+  port: 8080

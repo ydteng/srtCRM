@@ -28,6 +28,8 @@ public class UserController {
     public ResponseEntity<?> login(@PathVariable String code) throws IOException, NoSuchAlgorithmException {
         UserInfo userInfo = userService.login(code);
         if (userInfo != null){
+//            Map<String, Object> data = new HashMap<>();
+//            data.put("name", "John Doe");
             return ResponseEntity.status(HttpStatus.OK).body(new R(true,userInfo,"登陆成功"));
         }
         else {

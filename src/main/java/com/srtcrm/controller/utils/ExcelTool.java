@@ -7,13 +7,17 @@ import com.srtcrm.domain.CustomerInfo;
 import com.srtcrm.domain.StatementInfo;
 import com.srtcrm.service.CustomerService;
 import com.srtcrm.service.StatementService;
+import org.apache.commons.collections4.Get;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 @Controller
 public class ExcelTool {
     @Autowired
@@ -75,5 +79,25 @@ public class ExcelTool {
         HorizontalCellStyleStrategy horizontalCellStyleStrategy =
                 new HorizontalCellStyleStrategy(headWriteCellStyle, contentWriteCellStyle);
         return horizontalCellStyleStrategy;
+    }
+
+    public List<Object> getExcelData(Integer statement_id){
+        List<Object> excelData = new ArrayList<>();
+        StatementInfo statementInfo = statementService.getById(statement_id);
+        Integer totalUsage = statementInfo.getTotal_usage();
+        Integer totalTransaction = statementInfo.getTotal_transaction();
+        Map<String,String> headData = new HashMap<>();
+        headData.put("total_usage",totalUsage.toString());
+        headData.put("total_transaction",totalTransaction.toString());
+        excelData.add(headData);
+
+        List<CustomerInfo> customerInfoList = customerService.getAllByStatementId(statement_id);
+        for (int i = 0; i < customerInfoList.size(); i++) {
+            customerInfoList.get(i).setId(i+1);
+        }
+        excelData.add(customerInfoList);
+
+        return excelData;
+
     }
 }
