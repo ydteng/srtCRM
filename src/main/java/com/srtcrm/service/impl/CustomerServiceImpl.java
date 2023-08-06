@@ -14,6 +14,9 @@ import com.srtcrm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.Duration;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
@@ -43,7 +46,20 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
         Integer id = userService.getIdByToken(token);
         if (id == -1) return null;
         //再回到statement_info中找到数据
-        return getById(customer_id);
+        CustomerInfo customerInfo = getById(customer_id);
+        String update_time = customerInfo.getUpdate_time();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime dbTimestamp = LocalDateTime.parse(update_time, formatter);
+        // 获取当前时间
+        LocalDateTime currentTime = LocalDateTime.now();
+        // 计算时间差
+        Duration duration = Duration.between(dbTimestamp, currentTime);
+        long days = duration.toDays();
+        customerInfo.setUpdate_interval(days);
+
+        customerInfo.setUpdate_time(null);
+        return customerInfo;
     }
 
     @Override
@@ -82,6 +98,14 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
             Integer newTotalTransaction = (statementInfo.getTotal_transaction() + consumption);
             statementInfo.setTotal_transaction(newTotalTransaction);
         }
+
+
+        LocalDateTime currentTime = LocalDateTime.now();
+        // 定义格式化模式
+        DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        // 格式化为时间戳字符串
+        String update_time = currentTime.format(f);
+        customerInfo.setUpdate_time(update_time);
 
         return save(customerInfo) && statementService.updateById(statementInfo);
     }

@@ -2,6 +2,7 @@ package com.srtcrm.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.srtcrm.controller.utils.R;
+import com.srtcrm.domain.CustomerInfo;
 import com.srtcrm.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,8 +27,9 @@ public class CustomerController {
 
     @GetMapping("/{token}/{customer_id}")
     public ResponseEntity<?> getCustomerDetailByPage(@PathVariable String token, @PathVariable int customer_id){
-        if (customerService.getCustomerDetailPage(token, customer_id) != null){
-            return ResponseEntity.status(HttpStatus.OK).body(new R(true,customerService.getCustomerDetailPage(token, customer_id),"ok"));
+        CustomerInfo customerInfo = customerService.getCustomerDetailPage(token, customer_id);
+        if (customerInfo != null){
+            return ResponseEntity.status(HttpStatus.OK).body(new R(true,customerInfo,"ok"));
         }
         else {
             return ResponseEntity.status(HttpStatus.OK).body(new R(false,null,"获取失败，可能是用户不存在"));
