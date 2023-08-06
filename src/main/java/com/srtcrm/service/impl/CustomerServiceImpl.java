@@ -36,8 +36,25 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
         if (id == -1) return null;
         //再回到statement_info中找到数据
         QueryWrapper<CustomerInfo> qw = new QueryWrapper<>();
-        qw.eq("statement_id",statement_id).select("id","customer_name");
+        qw.eq("statement_id",statement_id).select("id","customer_name","update_time");
         customerDao.selectPage(page,qw);
+        //循环处理数据
+
+        Object[] customerInfoList = page.getRecords().toArray();
+        for(int i = 0; i < page.getTotal(); i++){
+            String update_time = ((CustomerInfo) customerInfoList[i]).getUpdate_time();
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime dbTimestamp = LocalDateTime.parse(update_time, formatter);
+            // 获取当前时间
+            LocalDateTime currentTime = LocalDateTime.now();
+            // 计算时间差
+            Duration duration = Duration.between(dbTimestamp, currentTime);
+            long days = duration.toDays();
+            ((CustomerInfo) customerInfoList[i]).setUpdate_interval(days);
+            ((CustomerInfo) customerInfoList[i]).setUpdate_time(null);
+        }
+
         return page;
     }
 
