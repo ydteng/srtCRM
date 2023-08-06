@@ -10,12 +10,14 @@ import com.srtcrm.domain.CustomerInfo;
 import com.srtcrm.service.StatementService;
 import com.srtcrm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
 
@@ -23,6 +25,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/statement")
 public class StatementController {
+    @Value("${excel.template-path}")
+    private String TemplatePath;
     @Autowired
     private StatementService statementService;
     @Autowired
@@ -50,15 +54,10 @@ public class StatementController {
         response.setCharacterEncoding("utf-8");
         String exportName = URLEncoder.encode( fileName, "UTF-8").replaceAll( "\\+","%2");
         response.setHeader("Content-disposition", "attachment;filename=" + exportName + ".xlsx");
-//
-//        EasyExcel.write(response.getOutputStream())
-//                .registerWriteHandler(excelTool.handlerStyleWrite())
-//                .head(excelTool.head(statement_id))
-//                .excelType(ExcelTypeEnum.XLSX)
-//                .sheet("客户数据")
-//                .doWrite(customerInfoList);
 
-        String template = "src/main/resources/static/template.xlsx";
+
+        String template = TemplatePath;
+
         WriteSheet sheet = EasyExcel.writerSheet().build();
         List<Object> excelData = excelTool.getExcelData(statement_id);
 
@@ -68,6 +67,7 @@ public class StatementController {
                 .fill(excelData.get(0),sheet)
                 .fill(excelData.get(1),sheet)
                 .finish();
+
         return null;
     }
 
