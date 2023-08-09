@@ -41,7 +41,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerDao, CustomerInfo> 
         //循环处理数据
 
         Object[] customerInfoList = page.getRecords().toArray();
-        for(int i = 0; i < page.getTotal(); i++){
+        for(int i = 0; i < customerInfoList.length; i++){
             String update_time = ((CustomerInfo) customerInfoList[i]).getUpdate_time();
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

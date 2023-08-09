@@ -36,7 +36,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserInfo> implements U
         if (getIdByToken(token) != -1) return null;
         UserInfo userInfo = new UserInfo();
         userInfo.setToken(token);
-        userInfo.setPermissions(0);
+        userInfo.setPermissions(0); //默认权限
         userInfo.setName(name);
         userInfo.setPhone(phone);
         if (save(userInfo)){
